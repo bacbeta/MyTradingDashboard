@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="icon" type="image/png" href="dashboard_icon.png">
+</head>
+
+<body>
+    <nav class="top-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="brand-text">Trading Dashboard</span>
+            </div>
+        </div>
+
+    </nav>
+
+    <div class="app-container">
+
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1>Orders Management</h1>
+                <div class="date-display" id="currentDate"></div>
+            </div>
+
+            <div class="dashboard-grid">
+
+
+                <div class="card order-panel" style="grid-column: 1 / 3; grid-row: auto; margin-bottom: 24px;">
+                    <h2 class="card-title">Place New Order</h2>
+
+                    <!-- BUY / SELL TOGGLE -->
+                    <div class="order-type-toggle" id="fullOrderType">
+                        <button class="toggle-btn buy active" type="button" id="typeBuy">Buy</button>
+                        <button class="toggle-btn sell" type="button" id="typeSell">Sell</button>
+                    </div>
+
+                    <!-- FORM -->
+                    <form id="fullOrderForm" class="order-form"
+                        action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfeVhh-eAmic-QDfSAIgNQIeJVeeqRPBpohXwmbBaQ_4UHVwQ/formResponse"
+                        method="POST" target="hidden_iframe">
+
+                        <!-- HIDDEN GOOGLE FORM FIELDS -->
+                        <input type="hidden" name="entry.92965325" id="gSymbol">
+                        <input type="hidden" name="entry.1380406651" id="gType">
+                        <input type="hidden" name="entry.1946609190" id="gEntry">
+                        <input type="hidden" name="entry.1237616822" id="gExit">
+                        <input type="hidden" name="entry.1470916775" id="gQty">
+                        <input type="hidden" name="entry.1278882628" id="gNotes">
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Symbol</label>
+                                <div class="input-with-icon">
+                                    <input type="text" id="fullOrderSymbol" required placeholder="e.g. NIFTY 50">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input type="number" id="fullOrderQty" required min="1" placeholder="">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Entry Price</label>
+                                <input type="number" id="fullOrderEntry" step="0.05" required placeholder="0.00">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Exit Price</label>
+                                <input type="number" id="fullOrderExit" step="0.05" required placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <input type="text" id="fullOrderNotes" placeholder="Strategy, notes etc.">
+                        </div>
+
+                        <div class="action-buttons" style="margin-top: 16px;">
+                            <button type="submit" class="submit-btn buy-btn" id="fullOrderSubmitBtn">
+                                Place Order
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- HIDDEN IFRAME (prevents redirect) -->
+                    <iframe name="hidden_iframe" style="display:none;"></iframe>
+
+                    <!-- SUCCESS MESSAGE -->
+                    <div id="successMsg" style="display:none; margin-top:10px; color:lightgreen;">
+                        ✅ Order submitted successfully!
+                    </div>
+                </div>
+
+            </div>
+
+    </div>
+    </main>
+    </div>
+
+
+</body>
+
+<script>
+    // ===== TYPE TOGGLE =====
+    let orderType = "Buy";
+
+    const buyBtn = document.getElementById("typeBuy");
+    const sellBtn = document.getElementById("typeSell");
+    const submitBtn = document.getElementById("fullOrderSubmitBtn");
+
+    buyBtn.onclick = () => {
+        orderType = "Buy";
+        buyBtn.classList.add("active");
+        sellBtn.classList.remove("active");
+        submitBtn.textContent = "Buy Order";
+    };
+
+    sellBtn.onclick = () => {
+        orderType = "Sell";
+        sellBtn.classList.add("active");
+        buyBtn.classList.remove("active");
+        submitBtn.textContent = "Sell Order";
+    };
+
+    // ===== FORM SUBMIT =====
+    const form = document.getElementById("fullOrderForm");
+
+    form.addEventListener("submit", function () {
+
+        // MAP UI → GOOGLE FORM
+        document.getElementById("gSymbol").value =
+            document.getElementById("fullOrderSymbol").value;
+
+        document.getElementById("gType").value = orderType;
+
+        document.getElementById("gEntry").value =
+            document.getElementById("fullOrderEntry").value;
+
+        document.getElementById("gExit").value =
+            document.getElementById("fullOrderExit").value;
+
+        document.getElementById("gQty").value =
+            document.getElementById("fullOrderQty").value;
+
+        document.getElementById("gNotes").value =
+            document.getElementById("fullOrderNotes").value;
+
+        // SUCCESS UI
+        setTimeout(() => {
+            document.getElementById("successMsg").style.display = "block";
+            form.reset();
+            // Automatically refresh the table after submitting (adds 1.5s delay for sheet to update)
+            setTimeout(fetchOrders, 1500);
+        }, 800);
+    });
+
+
+</script>
+
+</html>
